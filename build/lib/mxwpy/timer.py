@@ -34,7 +34,7 @@ class ptimer():
         self.end = 0
         self.lasted = []
         self.prompt = 'Timer has not started yet!'
-        self.unit = [' year', ' month', ' day', ' hour', ' minute', ' second']
+        self.unit = ['y ', 'm ', 'd ', 'h ', 'm ', 's ']
         self.cycle = [12, 30, 24, 60, 60]
 
     def __str__(self):
@@ -43,7 +43,7 @@ class ptimer():
     __repr__ = __str__
 
     def __add__(self, other):
-        prompt = 'Total running time is'
+        prompt = 'Total running time is: '
         result = []
         for i in range(6):
             result.append(self.lasted[i] + other.lasted[i])
@@ -74,7 +74,7 @@ class ptimer():
 
     # Internal function to calculate running time
     def _calc(self):
-        self.prompt = 'Total running time is:'
+        self.prompt = 'Total running time is: '
         for i in range(6):
             self.lasted.append(self.end[i] - self.begin[i])
         for i in range(5):
