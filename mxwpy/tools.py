@@ -5,6 +5,7 @@ from datetime import datetime
 from IPython.display import display, HTML
 import GPUtil
 import importlib
+import subprocess
 
 def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
     """
@@ -23,6 +24,24 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
     Example:
     >>> pkg_system_info(['numpy', 'pandas', 'scipy', 'qiskit'], show_pkg=True, show_gpu=True, show_system=False)
     """
+
+    def get_cpu_info():
+        # Get CPU information on Linux
+        cpu_info = subprocess.check_output("lscpu", shell=True).decode()
+        architecture = subprocess.check_output("uname -m", shell=True).decode().strip()
+        lines = cpu_info.split('\n')
+        info_dict = {}
+        for line in lines:
+            if "Vendor ID:" in line:
+                info_dict['Vendor ID'] = line.split(':')[1].strip()
+            if "CPU family:" in line:
+                info_dict['CPU family'] = line.split(':')[1].strip()
+            if "Model:" in line:
+                info_dict['Model'] = line.split(':')[1].strip()
+            if "Stepping:" in line:
+                info_dict['Stepping'] = line.split(':')[1].strip()
+        return architecture, info_dict
+
 
     if show_pkg:
         # Get packages version information
@@ -57,5 +76,10 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
             'CPU Memory': f"{round(psutil.virtual_memory().total / (1024.0 **3), 1)} Gb",
             'Time': datetime.now().strftime("%a %b %d %H:%M:%S %Y %Z")
         }
+
+        if system_info['OS'] == 'Linux':
+            architecture, cpu_info = get_cpu_info()
+            system_info['CPU Version'] = f"{architecture} Family {cpu_info['CPU family']} Model {cpu_info['Model']} Stepping {cpu_info['Stepping']}, {cpu_info['Vendor ID']}"
+
         system_info_df = pd.DataFrame(list(system_info.items()), columns=['System Information', 'Details'])
         display(HTML(system_info_df.to_html(index=False)))
