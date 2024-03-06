@@ -32,7 +32,7 @@ with open('setup.py', 'w') as f:
 os.system('git add .')
 
 # 提交更改
-os.system(f'git commit -m "version update to {major}.{minor}.{patch}"')
+os.system(f'git commit -m "v{major}.{minor}.{patch}"')
 
 # push更改到远程仓库
 os.system('git push')
