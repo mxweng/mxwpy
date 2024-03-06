@@ -38,5 +38,5 @@ os.system(f'git commit -m "v{major}.{minor}.{patch}"')
 os.system('git push')
 
 # 执行发布命令
-os.system('python setup.py sdist bdist_wheel')
+os.system('python -m build')
 os.system('twine upload dist/*')

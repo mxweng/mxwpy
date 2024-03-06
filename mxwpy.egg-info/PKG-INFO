@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: mxwpy
-Version: 0.1.4
+Version: 0.1.5
 Summary: efficient numerical schemes
 Home-page: https://github.com/mxweng/mxwpy
 Author: Mingxing Weng
@@ -15,4 +15,4 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 
 # mxwpy
-efficient numerical schemes
+efficient numerical schemes and some useful tools
