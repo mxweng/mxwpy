@@ -54,7 +54,7 @@ class ptimer():
         for i in range(6):
             if result[i]:
                 prompt += (str(result[i]) + self.unit[i])
-        return prompt
+        print(prompt)
 
     # Start timing
     def start(self):
