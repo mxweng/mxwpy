@@ -1,4 +1,3 @@
 @echo off
-pip install setuptools
-python distribute.py
+C:\Users\WMX\anaconda3\python.exe distribute.py
 pause
