@@ -1,3 +1,5 @@
+__all__ = ['ROU_cholesky']
+
 import numpy as np
 
 def ROU_cholesky(L, v, alpha=1, beta=1):
@@ -7,7 +9,7 @@ def ROU_cholesky(L, v, alpha=1, beta=1):
     Parameters
     ----------
     L : ndarray
-        The lower triangular Cholesky factor of the matrix.
+        The lower triangular Cholesky factor of the matrix A.
     alpha : float
         The scalar multiplier for the matrix. Must be non-negative.
     beta : float
@@ -16,19 +18,20 @@ def ROU_cholesky(L, v, alpha=1, beta=1):
         The vector used for the rank-one update.
 
     Returns
-    -------
+    ----------
     L_prime : ndarray
-        The updated lower triangular Cholesky factor of the matrix.
+        The updated lower triangular Cholesky factor of the matrix
+         \tilde{A} = alpha * A + beta * v * v^T.
 
-    References: 
-    -------
+    References
+    ----------
     1. https://en.wikipedia.org/wiki/Cholesky_decomposition#Rank-one_update
     2. Krause Oswin, Igel ChristianA, 2015, 
         More Efficient Rank-one Covariance Matrix Update for Evolution Strategies,
         https://christian-igel.github.io/paper/AMERCMAUfES.pdf
 
     Example
-    -------
+    ----------
     >>> L = np.array([[1, 0, 0], [2, 1, 0], [3, 2, 1]])
     >>> alpha = 2
     >>> beta = 3

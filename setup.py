@@ -1,8 +1,9 @@
+from distutils.command import install_data
 from setuptools import setup, find_packages
 
 setup(
     name='mxwpy',  # package name
-    version='0.1.7',  # version
+    version='0.1.8',  # version
     author='Mingxing Weng',  # author name
     author_email='2431141461@qq.com',  # author email
     description='efficient numerical schemes',  # short description
@@ -13,10 +14,28 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Mathematics',
     ],  # list of classifiers
     python_requires='>=3.6',  # Python version requirement
+    install_requires=['datetime', 
+                      'functools', 
+                      'GPUtil', 
+                      'importlib', 
+                      'IPython', 
+                      'numpy', 
+                      'pandas', 
+                      'platforms', 
+                      'psutil', 
+                      'scipy', 
+                      'subprocess', 
+                      'time',
+                      ],  # dependencies
 )

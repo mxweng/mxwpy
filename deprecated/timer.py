@@ -6,17 +6,28 @@ def func_timer(function):
     This is a timer decorator. It calculates the execution time of the function.
     
     Args:
-        function (callable): The function to be timed.
+    -------
+    function : callable
+        The function to be timed.
 
-    Returns:
-        callable: The decorated function which will print its execution time when called.
+    Returns
+    -------
+    function : callable
+        The decorated function which will print its execution time when called.
+
+    Example
+    -------
+    >>> @func_timer
+    >>> def my_function(n):
+    >>>     return sum(range(n))
+    >>> my_function(1000000)
     """
     @wraps(function)
     def function_timer(*args, **kwargs):
         t0 = time.time()
         result = function(*args, **kwargs)
         t1 = time.time()
-        print ("Running time of %s: %s seconds" %(function.__name__, str(t1-t0)))
+        print ("Running time of %s: %.3e seconds" % (function.__name__, t1-t0))
         return result
     return function_timer
 

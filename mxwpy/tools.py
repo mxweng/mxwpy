@@ -1,3 +1,5 @@
+__all__ = ['pkg_system_info', 'func_timer', 'timer']
+
 import platform
 import psutil
 import pandas as pd
@@ -12,16 +14,23 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
     This function takes a list of package names as input, imports each package dynamically, 
     and displays the version information of each package and the system information.
 
-    Parameters:
-    packages (list of str): A list of package names to import and get version information.
-    show_pkg (bool): Whether to show package version information. Default is True.
-    show_system (bool): Whether to show system information. Default is True.
-    show_gpu (bool): Whether to show GPU information. Default is True.
+    Parameters
+    ----------
+    packages : list of str
+        A list of package names to import and get version information.
+    show_pkg : bool
+        Whether to show package version information. Default is True.
+    show_system : bool
+        Whether to show system information. Default is True.
+    show_gpu : bool
+        Whether to show GPU information. Default is True.
 
-    Returns:
+    Returns
+    ----------
     None
 
-    Example:
+    Example
+    ----------
     >>> pkg_system_info(['numpy', 'pandas', 'scipy', 'qiskit'], show_pkg=True, show_gpu=True, show_system=False)
     """
 
@@ -83,3 +92,96 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
 
         system_info_df = pd.DataFrame(list(system_info.items()), columns=['System Information', 'Details'])
         display(HTML(system_info_df.to_html(index=False)))
+
+
+
+import time
+from functools import wraps
+
+def func_timer(function):
+    """
+    This is a timer decorator. It calculates the execution time of the function.
+    
+    Args
+    ----------
+    function : callable
+        The function to be timed.
+
+    Returns
+    ----------
+    function : callable
+        The decorated function which will print its execution time when called.
+
+    Example
+    ----------
+    >>> @func_timer
+    >>> def my_function(n):
+    >>>     return sum(range(n))
+    >>> my_function(1000000)
+    """
+
+    @wraps(function)
+    def function_timer(*args, **kwargs):
+        t0 = time.time()
+        result = function(*args, **kwargs)
+        t1 = time.time()
+        print ("Running time of %s: %.3e seconds" % (function.__name__, t1-t0))
+        return result
+    return function_timer
+
+
+class timer:
+    """
+    A simple timer class.
+    
+    Attributes
+    ----------
+    start_time : float
+        The time when the timer was started.
+    last_lap_time : float
+        The time when the last lap was recorded.
+
+    Methods
+    -------
+    __init__():
+        Initializes the timer.
+    __str__():
+        Returns a string representation of the timer.
+    __repr__():
+        Returns a formal string representation of the timer.
+    reset():
+        Resets the timer.
+    update():
+        Updates the last lap time without printing anything.
+    lap():
+        Records a lap time and prints the time difference since the last lap.
+    stop():
+        Prints the total time.
+    """
+    
+    def __init__(self):
+        self.start_time = time.time()
+        self.last_lap_time = self.start_time
+
+    def __str__(self):
+        return 'Timer(start_time=%.3e, last_lap_time=%.3e)' % (self.start_time, self.last_lap_time)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def reset(self):
+        self.start_time = time.time()
+        self.last_lap_time = self.start_time
+
+    def update(self):
+        self.last_lap_time = time.time()
+
+    def lap(self):
+        current_time = time.time()
+        lap_time = current_time - self.last_lap_time
+        self.last_lap_time = current_time
+        print('Lap time: %.3e s' % lap_time)
+
+    def stop(self):
+        total_time = time.time() - self.start_time
+        return print('Total time: %.3e s' % total_time)
