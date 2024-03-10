@@ -2,9 +2,11 @@ README.md
 setup.py
 mxwpy/__init__.py
 mxwpy/linalg.py
-mxwpy/timer.py
+mxwpy/nn.py
+mxwpy/spectral.py
 mxwpy/tools.py
 mxwpy.egg-info/PKG-INFO
 mxwpy.egg-info/SOURCES.txt
 mxwpy.egg-info/dependency_links.txt
+mxwpy.egg-info/requires.txt
 mxwpy.egg-info/top_level.txt

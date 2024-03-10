@@ -1,18 +1,35 @@
 Metadata-Version: 2.1
 Name: mxwpy
-Version: 0.1.7
+Version: 0.1.9
 Summary: efficient numerical schemes
 Home-page: https://github.com/mxweng/mxwpy
 Author: Mingxing Weng
 Author-email: 2431141461@qq.com
 Classifier: Development Status :: 3 - Alpha
 Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
 Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Mathematics
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
+Requires-Dist: datetime
+Requires-Dist: functools
+Requires-Dist: GPUtil
+Requires-Dist: importlib
+Requires-Dist: IPython
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: platforms
+Requires-Dist: psutil
+Requires-Dist: scipy
+Requires-Dist: subprocess
+Requires-Dist: time
 
 # mxwpy
 efficient numerical schemes and some useful tools
