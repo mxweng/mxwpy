@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mxwpy',  # package name
-    version='0.1.8',  # version
+    version='0.1.9',  # version
     author='Mingxing Weng',  # author name
     author_email='2431141461@qq.com',  # author email
     description='efficient numerical schemes',  # short description
