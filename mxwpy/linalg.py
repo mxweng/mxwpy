@@ -1,4 +1,5 @@
-__all__ = ['ROU_cholesky']
+__all__ = ['ROU_cholesky',
+           ]
 
 import numpy as np
 

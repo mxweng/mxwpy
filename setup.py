@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 
 setup(
     name='mxwpy',  # package name
-    version='0.2.0',  # version
-    author='Mingxing Weng',  # author name
+    version='0.2.1',  # version
+    author='MXWeng',  # author name
     author_email='2431141461@qq.com',  # author email
     description='efficient numerical schemes',  # short description
     long_description=open('README.md').read(),  # long description, usually your README
@@ -25,17 +25,11 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics',
     ],  # list of classifiers
     python_requires='>=3.6',  # Python version requirement
-    install_requires=['datetime', 
-                      'functools', 
-                      'GPUtil', 
-                      'importlib', 
-                      'IPython', 
+    install_requires=['GPUtil',                      
+                      'IPython',
                       'numpy', 
-                      'pandas', 
-                      'platforms', 
+                      'pandas',               
                       'psutil', 
-                      'scipy', 
-                      'subprocess', 
-                      'time',
+                      'scipy',
                       ],  # dependencies
 )

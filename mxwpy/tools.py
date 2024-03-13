@@ -1,4 +1,5 @@
-__all__ = ['pkg_system_info', 'func_timer', 'timer']
+__all__ = ['pkg_system_info', 'func_timer', 'timer',
+           ]
 
 import platform
 import psutil
@@ -8,6 +9,9 @@ from IPython.display import display, HTML
 import GPUtil
 import importlib
 import subprocess
+
+import time
+from functools import wraps
 
 def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
     """
@@ -95,8 +99,6 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
 
 
 
-import time
-from functools import wraps
 
 def func_timer(function):
     """

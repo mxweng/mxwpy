@@ -1,4 +1,6 @@
-__all__ = ['HermiteP', 'HermiteF', 'Hermite_Gauss']
+__all__ = ['JacobiP', 'Jacobi_Gauss', 'Jacobi_Gauss_Lobatto', 
+           'HermiteP', 'HermiteF', 'Hermite_Gauss',
+           ]
 
 """
 spectral.py
@@ -50,19 +52,17 @@ def JacobiP(x, alpha, beta, N):
         xp = xp.T
     PL = np.zeros((N + 1, max(xp.shape)))
     gamma0 = np.power(2, alpha + beta + 1) * gamma(alpha + 1) * gamma(beta + 1) / gamma(alpha + beta + 2)
-    PL[0, :] = 1.0 / np.sqrt(gamma0)
+    PL[0] = 1.0 / np.sqrt(gamma0)
     if N == 0:
         return PL.T
     gamma1 = (alpha + 1) * (beta + 1) / (alpha + beta + 3) * gamma0
-    PL[1, :] = ((alpha + beta + 2) * xp / 2 + (alpha - beta) / 2) / np.sqrt(gamma1)
-    if N == 1:
-        return PL[N, :].T
+    PL[1] = ((alpha + beta + 2) * xp / 2 + (alpha - beta) / 2) / np.sqrt(gamma1)
     aold = 2 / (2 + alpha + beta) * np.sqrt((alpha + 1) * (beta + 1) / (alpha + beta + 3))
     for i in range(1, N):
         h1 = 2 * i + alpha + beta
         anew = 2 / (h1 + 2) * np.sqrt((i + 1) * (i + 1 + alpha + beta) * (i + 1 + alpha) * (i + 1 + beta) / (h1 + 1) / (h1 + 3))
         bnew = -(alpha * alpha - beta * beta) / h1 / (h1 + 2)
-        PL[i + 1, :] = 1 / anew * (-aold * PL[i - 1, :] + (xp - bnew) * PL[i, :])
+        PL[i + 1] = 1 / anew * (-aold * PL[i - 1] + (xp - bnew) * PL[i])
         aold = anew
     return PL
 
@@ -96,9 +96,10 @@ def Jacobi_Gauss(alpha, beta, N):
     """
 
     if N == 1:
+        D = np.zeros((1,1))
         r = np.array([-(alpha - beta) / (alpha + beta + 2)])
         w = np.array([2])
-        return r, w
+        return D, r, w
     
     h1 = 2 * np.arange(N) + alpha + beta
     h11, h12, h13 = h1 + 1, h1 + 2, h1 + 3
@@ -163,19 +164,27 @@ def Jacobi_Gauss_Lobatto(alpha, beta, N):
 
     References
     ----------
-    1. Code-reproduction/Poisson-GPU.ipynb
-    2. https://en.wikipedia.org/wiki/Gaussian_quadrature#Gauss%E2%80%93Lobatto_rules
+    1. Spectral Method P83 
+    2. Code-reproduction/Poisson-GPU.ipynb
     """
 
     r = np.zeros((N + 1,))
     r[0], r[-1] = -1.0, 1.0
-    if N == 1:
-        return r
-    # dx(J_N^{alpha, beta}(x)) = C(alpha, beta, N) * J_{N-1}^{alpha+1, beta+1}(x)
-    # thus have same zeros
-    r[1:-1] = Jacobi_Gauss(alpha + 1, beta + 1, N - 1)[1]
-
-    w = (2 * N + 1) / (N * N + N) / np.power(JacobiP(r, 0, 0, N)[-1], 2)
+    w = np.zeros((N + 1,))
+    w[0] = (beta + 1) * gamma(beta + 1)**2
+    w[-1] = (alpha + 1) * gamma(alpha + 1)**2
+    
+    if N > 1:
+        # dx(J_N^{alpha, beta}(x)) = C(alpha, beta, N) * J_{N-1}^{alpha+1, beta+1}(x)
+        # thus have same zeros
+        r[1:-1] = Jacobi_Gauss(alpha + 1, beta + 1, N - 1)[1]
+        # equ(3.139)
+        cd = 2**(alpha + beta + 1) * gamma(N) / gamma(N + alpha + beta + 2)
+        md = gamma(N + alpha + 1) / gamma(N + beta + 1)
+        w[0] *= cd * md
+        w[-1] *= cd / md
+        w[1:-1] = (2 * N + alpha + beta + 1) / (1 - r[1:-1]**2)**2 / (N-1) / (N + alpha + beta + 2) / JacobiP(r[1:-1], alpha + 2, beta + 2, N - 2)[-1]**2
+        
     # construct first order LGL derivative matrix D
     Distance = r[:, None] - r[None, :] + np.eye(N + 1)
     omega = np.prod(Distance, axis=1)
