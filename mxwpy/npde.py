@@ -142,7 +142,7 @@ def partial_derivative(F, X, Alpha, create_graph=False):
             return partial_derivative(_F, X_perfix, Alpha[:-1], True)
         return Jacobian(_f, x_last, Alpha[-1], create_graph)
 
-def partial_derivative_vector(F, X, Alpha, create_graph=False):
+def partial_derivative_vector(F, X, Alpha, create_graph=False, batch_size=[15000,1]):
     """
     Compute the partial derivatives for vector-valued function 
     F(x1, x2, ..., xn) = [f1(x1, x2, ..., xn), f2(x1, x2, ..., xn), ..., fk(x1, x2, ..., xn)],
@@ -161,6 +161,11 @@ def partial_derivative_vector(F, X, Alpha, create_graph=False):
         The order of the derivative for each dimension.
     create_graph : bool, optional
         Whether to create a computational graph. Defaults to False.
+    batch_size : list, optional
+        The batch size for computing the partial derivatives. 
+        batch_size[0] is the number of points in each batch, 
+        and batch_size[1] is the number of functions in each batch.
+        Defaults to [15000, 1].
 
     Returns
     ----------
@@ -179,10 +184,13 @@ def partial_derivative_vector(F, X, Alpha, create_graph=False):
 
     out_dim = F(X[:1]).shape[1]
     res = []
-    for i in range(out_dim):
-        def _F(X): return F(X)[:, i:i+1]
-        res.append(partial_derivative(_F, X, Alpha, create_graph))
-    return torch.cat(res, dim=1)
+    for i in range(0, X.shape[0], batch_size[0]):
+        res_sub = []
+        for j in range(0, out_dim, batch_size[1]):
+            def _F(X): return F(X)[:, j:j+batch_size[1]]
+            res_sub.append(partial_derivative(_F, X[i:i+batch_size[0]], Alpha, create_graph))
+        res.append(torch.cat(res_sub, dim=1))
+    return torch.cat(res, dim=0)
 
 
 def meshgrid_to_matrix(inputs, indexing='xy'):
@@ -279,7 +287,13 @@ def gen_collo(Domain, grids, temporal = False, corner = True):
              [1.0000, 2.0000, 4.0000]]))
     """
 
-    dim = len(grids)
+    dim = len(Domain[0])
+    if len(grids) != dim:
+        if len(grids) == 1:
+            Warning("The number of grids is set as the same for all dimensions.")
+            grids = grids * dim
+        else:
+            raise ValueError("The length of grids should be equal to the dimension of the domain.")
     G = [torch.linspace(l, r, n) for l, r, n in zip(*(Domain + [grids]))]
     if temporal:
         G_rs = [G[0][1:]] + [G[i][1:-1] for i in range(1, dim)]

@@ -2,7 +2,7 @@ README.md
 setup.py
 mxwpy/__init__.py
 mxwpy/linalg.py
-mxwpy/nn.py
+mxwpy/npde.py
 mxwpy/spectral.py
 mxwpy/tools.py
 mxwpy.egg-info/PKG-INFO

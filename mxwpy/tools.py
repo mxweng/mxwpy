@@ -73,8 +73,20 @@ def pkg_system_info(packages, show_pkg=True, show_gpu=True, show_system=True):
     if show_gpu:
         # Get GPU information
         gpus = GPUtil.getGPUs()
-        gpu_info = {'GPU Version': gpus[0].name, 'GPU Memory': f"{round(gpus[0].memoryTotal / 1024, 1)} Gb"} if gpus else {'GPU Version': 'No GPU detected', 'GPU Memory': 'N/A'}
-        gpu_info_df = pd.DataFrame(list(gpu_info.items()), columns=['GPU Information', 'Details'])
+        gpu_info_list = []
+        if gpus:
+            for gpu in gpus:
+                gpu_info = [gpu.name, f"{round(gpu.memoryTotal / 1024, 1)} Gb", 1]
+                for existing_gpu_info in gpu_info_list:
+                    if existing_gpu_info[0] == gpu_info[0] and existing_gpu_info[1] == gpu_info[1]:
+                        existing_gpu_info[2] += 1
+                        break
+                else:
+                    gpu_info_list.append(gpu_info)
+        else:
+            gpu_info_list = [['No GPU detected', 'N/A', 'N/A']]
+
+        gpu_info_df = pd.DataFrame(gpu_info_list, columns=['GPU Version', 'GPU Memory', 'Count'])
         display(HTML(gpu_info_df.to_html(index=False)))
 
     if show_system:

@@ -1,5 +1,5 @@
 __all__ = ['JacobiP', 'Jacobi_Gauss', 'Jacobi_Gauss_Lobatto', 
-           'HermiteP', 'HermiteF', 'Hermite_Gauss',
+           'HermiteP', 'HermiteF', 'Hermite_Gauss', 'mapped_Jacobi_Gauss'
            ]
 
 """
@@ -18,6 +18,7 @@ from scipy.special import roots_hermite
 from scipy.special import gamma
 from scipy.sparse import diags
 from scipy.linalg import eigh
+from sympy import symbols, sqrt, atanh, tanh, sinh, log, lambdify, diff
 
 def JacobiP(x, alpha, beta, N):
     """
@@ -101,9 +102,9 @@ def Jacobi_Gauss(alpha, beta, N):
         w = np.array([2])
         return D, r, w
     
-    h1 = 2 * np.arange(N) + alpha + beta
+    h1 = 2.0 * np.arange(N) + alpha + beta
     h11, h12, h13 = h1 + 1, h1 + 2, h1 + 3
-    h2 = np.arange(1, N)
+    h2 = 1.0 * np.arange(1, N)
     # Adjust h1, h11, h12 values based on alpha and beta
     # to avoid division by zero
     if abs(alpha + beta) < 10 * np.finfo(float).eps:
@@ -117,8 +118,6 @@ def Jacobi_Gauss(alpha, beta, N):
     A = diags(0.5 * (beta**2 - alpha**2) / h12 / h1).toarray() + \
         diags(2 / h12[:-1] * np.sqrt(h2 * (h2 + alpha + beta) * \
         (h2 + alpha) * (h2 + beta) / h11[:-1] / h13[:-1]), 1).toarray()
-    if alpha + beta < 10 * np.finfo(float).eps:
-        A[0, 0] = 0.0
 
     r, V = eigh(A + A.T)
     # equation (3.144)
@@ -319,4 +318,64 @@ def Hermite_Gauss(N, c=1 / np.sqrt(2)):
     np.fill_diagonal(dis, 1)
     D = H[:, np.newaxis] / H[np.newaxis, :] / dis
     np.fill_diagonal(D, r * (1 - 2 * c**2))
+    return D, r, w
+
+
+
+def mapped_Jacobi_Gauss(alpha, beta, N, sf = 1, mapping = 'alg'):
+    """
+    Mapped Jacobi-Gauss quadrature points, weights and first order derivative matrix.
+    The mapping is defined by the function y = map(r, s), where r is the original Jacobi-Gauss quadrature points,
+    and s is the scaling factor of the mapping.
+
+    Parameters
+    ----------
+    alpha : float
+        The alpha parameter of the Jacobi polynomial. alpha > -1.
+    beta : float
+        The beta parameter of the Jacobi polynomial. beta > -1.
+        If alpha = beta = 0, the Jacobi polynomial is Legendre polynomial.
+    N : int
+        The order of the Jacobi polynomial.
+    sf : float, optional
+        The scaling factor of the mapping. Default is 1.
+    mapping : str, optional
+        The mapping function. Default is 'alg', which means using the algebraic mapping (cf. equ(7.159)).
+        Other options are 'log' and 'exp'.
+
+    Returns
+    ----------
+    D : ndarray, shape (N, N)
+        The first order derivative matrix of the mapped Jacobi-Gauss quadrature.
+    r : ndarray, shape (N,)
+        The mapped Jacobi-Gauss quadrature nodes.
+    w : ndarray, shape (N,)
+        The modified mapped Jacobi-Gauss quadrature weights.
+
+    References
+    ----------
+    1. Spectral Method P280, P286
+    """
+
+    y, s = symbols('y s')
+
+    if mapping == 'alg':
+        map_expr = s * y / sqrt(1 - y**2)
+        diff_map_expr = diff(map_expr, y)
+    elif mapping == 'log':
+        map_expr = s * atanh(y)
+        diff_map_expr = diff(map_expr, y)
+    elif mapping == 'exp':
+        map_expr = sinh(s * y)
+        diff_map_expr = diff(map_expr, y)
+    else:
+        raise ValueError("Invalid mapping function. Please choose from 'alg', 'log' and 'exp'.")
+
+    map = lambdify((y, s), map_expr, "numpy")
+    diff_map = lambdify((y, s), diff_map_expr, "numpy")
+
+    D, r, w = Jacobi_Gauss(alpha, beta, N)
+    omega = (1 - r)**alpha * (1 + r)**beta
+    diff_g = diff_map(r, sf)
+    D, r, w = D / diff_g[:, None], map(r, sf), w / omega * diff_g
     return D, r, w
